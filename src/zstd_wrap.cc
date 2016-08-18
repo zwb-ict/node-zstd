@@ -98,7 +98,6 @@ static NAN_METHOD(CompressUsingCDict) {
     return Nan::ThrowError("Compress failed!");
   }
 
-
   Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, cSize);
 
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
@@ -115,11 +114,6 @@ static NAN_METHOD(DecompressUsingDDict) {
   v8::Local<v8::Object> dictBuf = info[1]->ToObject();
   char *dict = node::Buffer::Data(dictBuf);
   size_t dictSize = node::Buffer::Length(dictBuf);
-
-  int compressionLevel = 1;
-  if (info.Length() == 3) {
-    compressionLevel = info[2]->IsUndefined() ? 0 : info[2]->NumberValue();
-  }
 
   ZSTD_DDict *ddict = ZSTD_createDDict(dict, dictSize);
 
