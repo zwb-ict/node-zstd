@@ -10,7 +10,7 @@
         "<(module_root_dir)/deps/zstd.gyp:zstd"
       ],
       "sources": [
-
+        "src/zstd_wrap.cc"
       ],
       "conditions": [
         [
