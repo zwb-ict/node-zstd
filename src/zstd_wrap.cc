@@ -62,7 +62,7 @@ static NAN_METHOD(Decompress) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(CompressUsingCDict) {
+static NAN_METHOD(CompressUsingDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -92,7 +92,7 @@ static NAN_METHOD(CompressUsingCDict) {
   }
 
   ZSTD_CCtx* const cctx = ZSTD_createCCtx();
-  size_t const cSize = ZSTD_compress_usingCDict(cctx, dst, dstCapacity, src, srcSize, cdict);
+  size_t const cSize = ZSTD_compress_usingDict(cctx, dst, dstCapacity, src, srcSize, cdict, sizeof(cdict), compressionLevel);
   ZSTD_freeCCtx(cctx);
   if (ZSTD_isError(cSize)) {
     return Nan::ThrowError("Compress failed!");
@@ -103,7 +103,7 @@ static NAN_METHOD(CompressUsingCDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(DecompressUsingDDict) {
+static NAN_METHOD(DecompressUsingDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -132,7 +132,7 @@ static NAN_METHOD(DecompressUsingDDict) {
   }
 
   ZSTD_DCtx* dctx = ZSTD_createDCtx();
-  size_t dSize = ZSTD_decompress_usingDDict(dctx, dst, dstCapacity, src, srcSize, ddict);
+  size_t dSize = ZSTD_decompress_usingDict(dctx, dst, dstCapacity, src, srcSize, ddict, sizeof(ddict));
   ZSTD_freeDCtx(dctx);
   if (ZSTD_isError(dSize))  {
     return Nan::ThrowError("Decompress failed!");
@@ -146,8 +146,8 @@ static NAN_METHOD(DecompressUsingDDict) {
 NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, Compress);
   NAN_EXPORT(target, Decompress);
-  NAN_EXPORT(target, CompressUsingCDict);
-  NAN_EXPORT(target, DecompressUsingDDict);
+  NAN_EXPORT(target, CompressUsingDict);
+  NAN_EXPORT(target, DecompressUsingDict);
 }
 
 NODE_MODULE(node_zstd, Init)
