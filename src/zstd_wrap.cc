@@ -7,8 +7,8 @@ namespace {
   using Nan::GetFunction;
   using Nan::NewBuffer;
   using Nan::NanThrow;
-  using Nan::New;
   using Nan::Set;
+  using Nan::New;
 
   using node::Buffer::HasInstance;
   using node::Buffer::Length;
@@ -19,16 +19,26 @@ namespace {
   using v8::Local;
 
   NAN_MODULE_INIT(Init) {
-    Local<FunctionTemplate> tpl = New<FunctionTemplate>(New);
+    Local<FunctionTemplate> tpl = New<FunctionTemplate>(Ctor);
     tpl->SetClassName(Nan::New("ZSTD").ToLocalChecked());
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
     SetPrototypeMethod(tpl, "compress", Compress);
     SetPrototypeMethod(tpl, "decompress", Decompress);
 
-    constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
-    Set(target, Nan::New("ZSTD").ToLocalChecked(),
+    constructor().Reset(GetFunction(tpl).ToLocalChecked());
+    Set(target, New("ZSTD").ToLocalChecked(),
         GetFunction(tpl).ToLocalChecked());
+  }
+
+  NAN_METHOD(Ctor) {
+    if (info.IsConstructCall()) {
+      UDT4Wrap *obj = new UDT4Wrap();
+      obj->Wrap(info.This());
+      info.GetReturnValue().Set(info.This());
+    } else {
+      Local<Function> cons = New<Function>(constructor);
+      info.GetReturnValue().Set(cons->NewInstance(0, NULL));
   }
 
   NAN_METHOD(Compress) {
