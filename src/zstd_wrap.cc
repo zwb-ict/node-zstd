@@ -68,3 +68,5 @@ NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, Compress);
   NAN_EXPORT(target, Decompress);
 }
+
+NODE_MODULE(node_zstd, Init)
