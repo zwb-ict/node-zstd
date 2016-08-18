@@ -4,7 +4,7 @@
   "description": "Zstd wrapper for Nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/zstd.js"
   },
   "repository": {
     "type": "git",
