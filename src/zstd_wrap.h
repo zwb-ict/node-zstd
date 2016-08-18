@@ -7,6 +7,7 @@ namespace {
 
   class ZSTDWrap : public Nan::ObjectWrap {
   public:
+    static NAN_MODULE_INIT(Init);
     static NAN_METHOD(Compress);
     static NAN_METHOD(Decompress);
   }
