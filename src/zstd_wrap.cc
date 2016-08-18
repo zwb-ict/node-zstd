@@ -109,3 +109,5 @@ namespace {
   }
 
 }
+
+NODE_MODULE(node_zstd, ZSTDWrap::Init)
