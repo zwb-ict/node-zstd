@@ -1,4 +1,4 @@
-# node-zstd
+node-zstd
 =====
 
 [![Build Status][1]][2]
