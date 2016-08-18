@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/zwb-ict/node-zstd/issues"
   },
-  "homepage": "https://github.com/zwb-ict/node-zstd#readme"
+  "homepage": "https://github.com/zwb-ict/node-zstd#readme",
+  "dependencies": {
+    "nan": "^2.4.0"
+  }
 }
