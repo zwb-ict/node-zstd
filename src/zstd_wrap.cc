@@ -1,107 +1,70 @@
-#ifndef ZSTD_WRAP_H
-#define ZSTD_WRAP_H
-
 #include <nan.h>
 #include <zstd.h>
 
-class ZSTDWrap : public Nan::ObjectWrap {
- public:
-  static NAN_MODULE_INIT(Init) {
-    v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-    tpl->SetClassName(Nan::New("ZSTD").ToLocalChecked());
-    tpl->InstanceTemplate()->SetInternalFieldCount(1);
+static NAN_METHOD(Compress) {
 
-    SetPrototypeMethod(tpl, "compress", Compress);
-    SetPrototypeMethod(tpl, "decompress", Decompress);
-
-    constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
-    Nan::Set(target, Nan::New("ZSTD").ToLocalChecked(),
-             Nan::GetFunction(tpl).ToLocalChecked());
+  if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
+    return Nan::ThrowError("First argument should be a buffer");
   }
 
- private:
-  static NAN_METHOD(New) {
-    if (info.IsConstructCall()) {
-      ZSTDWrap *obj = new ZSTDWrap();
-      obj->Wrap(info.This());
-      info.GetReturnValue().Set(info.This());
-    } else {
-      v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-      info.GetReturnValue().Set(cons->NewInstance(0, NULL));
-    }
+  v8::Local<v8::Object> buf = info[0]->ToObject();
+  char *src = node::Buffer::Data(buf);
+  size_t srcSize = node::Buffer::Length(buf);
+
+  size_t dstCapacity = ZSTD_compressBound(srcSize);
+  char *dst = (char*)malloc(dstCapacity);
+  if (NULL == dst) {
+    return Nan::ThrowError("Too large, Out of memory!");
   }
 
-  static NAN_METHOD(Compress) {
-    ZSTDWrap *obj = ObjectWrap::Unwrap<ZSTDWrap>(info.Holder());
-
-    if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
-      return Nan::ThrowError("First argument should be a buffer");
-    }
-
-    v8::Local<v8::Object> buf = info[0]->ToObject();
-    char *src = node::Buffer::Data(buf);
-    size_t srcSize = node::Buffer::Length(buf);
-
-    size_t dstCapacity = ZSTD_compressBound(srcSize);
-    char *dst = (char*)malloc(dstCapacity);
-    if (NULL == dst) {
-      return Nan::ThrowError("Too large, Out of memory!");
-    }
-
-    int compressionLevel = 1;
-    if (info.Length() == 2) {
-      compressionLevel = info[1]->IsUndefined() ? 0 : info[1]->NumberValue();
-    }
-
-    size_t cSize = ZSTD_compress(dst, dstCapacity, src, srcSize, compressionLevel);
-    if (ZSTD_isError(cSize)) {
-      return Nan::ThrowError("Compress failed!");
-    }
-
-    v8::Local<v8::Object> dstBuf = Nan::NewBuffer(dst, cSize);
-    free(dst);
-
-    return info.GetReturnValue().Set(dstBuf);
+  int compressionLevel = 1;
+  if (info.Length() == 2) {
+    compressionLevel = info[1]->IsUndefined() ? 0 : info[1]->NumberValue();
   }
 
-  static NAN_METHOD(Decompress) {
-    ZSTDWrap *obj = ObjectWrap::Unwrap<ZSTDWrap>(info.Holder());
-
-    if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
-      return Nan::ThrowError("First argument should be a buffer");
-    }
-
-    v8::Local<v8::Object> buf = info[0]->ToObject();
-    char *src = node::Buffer::Data(buf);
-    size_t srcSize = node::Buffer::Length(buf);
-
-    size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
-    if (0 == dstCapacity) {
-      return Nan::ThrowError("Compressed size unknown");
-    }
-
-    char *dst = (char*)malloc(dstCapacity);
-    if (NULL == dst) {
-      return Nan::ThrowError("Too large, Out of memory!");
-    }
-
-    size_t dSize = ZSTD_decompress(dst, dstCapacity, src, srcSize);
-    if (ZSTD_isError(dSize))  {
-      return Nan::ThrowError("Decompress failed!");
-    }
-
-    v8::Local<v8::Object> dstBuf = Nan::NewBuffer(dst, dSize);
-    free(dst);
-
-    return info.GetReturnValue().Set(dstBuf);
+  size_t cSize = ZSTD_compress(dst, dstCapacity, src, srcSize, compressionLevel);
+  if (ZSTD_isError(cSize)) {
+    return Nan::ThrowError("Compress failed!");
   }
 
-  static inline Nan::Persistent<v8::Function> & constructor() {
-    static Nan::Persistent<v8::Function> _constructor;
-    return _constructor;
+  Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, cSize);
+  free(dst);
+
+  return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
+}
+
+static NAN_METHOD(Decompress) {
+
+  if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
+    return Nan::ThrowError("First argument should be a buffer");
   }
-};
 
-NODE_MODULE(node_zstd, ZSTDWrap::Init)
+  v8::Local<v8::Object> buf = info[0]->ToObject();
+  char *src = node::Buffer::Data(buf);
+  size_t srcSize = node::Buffer::Length(buf);
 
-#endif
+  size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
+  if (0 == dstCapacity) {
+    return Nan::ThrowError("Compressed size unknown");
+  }
+
+  char *dst = (char*)malloc(dstCapacity);
+  if (NULL == dst) {
+    return Nan::ThrowError("Too large, Out of memory!");
+  }
+
+  size_t dSize = ZSTD_decompress(dst, dstCapacity, src, srcSize);
+  if (ZSTD_isError(dSize))  {
+    return Nan::ThrowError("Decompress failed!");
+  }
+
+  Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, dSize);
+  free(dst);
+
+  return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
+}
+
+NAN_MODULE_INIT(Init) {
+  NAN_EXPORT(target, Compress);
+  NAN_EXPORT(target, Decompress);
+}
