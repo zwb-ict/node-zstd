@@ -28,7 +28,6 @@ static NAN_METHOD(Compress) {
   }
 
   Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, cSize);
-  free(dst);
 
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
@@ -59,7 +58,6 @@ static NAN_METHOD(Decompress) {
   }
 
   Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, dSize);
-  free(dst);
 
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
