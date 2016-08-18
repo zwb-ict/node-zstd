@@ -7,3 +7,47 @@ node-zstd
 [2]: https://travis-ci.org/zwb-ict/node-zstd
 
 Zstd wrapper for Nodejs
+
+## Installation
+
+```bash
+$ npm install node-zstd --save
+```
+
+## Usage
+
+### sample use
+
+```js
+var zstd = require('node-zstd');
+
+var data = new Buffer('hello zstd');
+
+var compressd = zstd.compress(data, 18);  // 18 is compressionLevel, default 1 if none.
+
+var decompressed = zstd.decompress(compressed);
+
+console.log(decompressed.toString());  // should be 'hello zstd'
+```
+### with dict
+
+```js
+var zstd = require('node-zstd');
+
+var data = new Buffer('hello zstd');
+
+var dict = new Buffer('Nice to meet you!');
+
+var compressd = zstd.compressUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
+
+var decompressed = zstd.decompressUsingDict(compressed, dict);
+
+console.log(decompressed.toString());  // should be 'hello zstd'
+```
+## Tests
+
+```sh
+$ npm test
+```
+## License
+MIT
