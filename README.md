@@ -23,7 +23,7 @@ var zstd = require('node-zstd');
 
 var data = new Buffer('hello zstd');
 
-var compressd = zstd.compress(data, 18);  // 18 is compressionLevel, default 1 if none.
+var compressed = zstd.compress(data, 18);  // 18 is compressionLevel, default 1 if none.
 
 var decompressed = zstd.decompress(compressed);
 
@@ -38,7 +38,7 @@ var data = new Buffer('hello zstd');
 
 var dict = new Buffer('Nice to meet you!');
 
-var compressd = zstd.compressUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
+var compressed = zstd.compressUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
 
 var decompressed = zstd.decompressUsingDict(compressed, dict);
 
