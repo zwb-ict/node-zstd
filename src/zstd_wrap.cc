@@ -143,11 +143,54 @@ static NAN_METHOD(DecompressUsingDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
+static NAN_METHOD(DecompressUsingCDict) {
+
+  if (info.Length() < 2 ||
+      !node::Buffer::HasInstance(info[0]) ||
+      !node::Buffer::HasInstance(info[1])) {
+    return Nan::ThrowError("First and second argument should be a buffer");
+  }
+
+  v8::Local<v8::Object> dictBuf = info[1]->ToObject();
+  char *dict = node::Buffer::Data(dictBuf);
+  size_t dictSize = node::Buffer::Length(dictBuf);
+
+  ZSTD_DDict *ddict = ZSTD_createDDict(dict, dictSize);
+
+  v8::Local<v8::Object> inputBuf = info[0]->ToObject();
+  char *src = node::Buffer::Data(inputBuf);
+  size_t srcSize = node::Buffer::Length(inputBuf);
+
+  size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
+  if (0 == dstCapacity) { 
+    // When `return==0`, consider data to decompress could have any size.
+    // It's not a Error
+    printf("%s\n", "Compressed size unknown");
+  }
+
+  char *dst = (char*)malloc(dstCapacity);
+  if (NULL == dst) {
+    return Nan::ThrowError("Too large, Out of memory!");
+  }
+
+  ZSTD_DCtx* dctx = ZSTD_createDCtx();
+  size_t dSize = ZSTD_decompress_usingDDict(dctx, dst, dstCapacity, src, srcSize, ddict);
+  ZSTD_freeDCtx(dctx);
+  if (ZSTD_isError(dSize))  {
+    return Nan::ThrowError("Decompress failed!");
+  }
+
+  Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, dSize);
+
+  return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
+}
+
 NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, Compress);
   NAN_EXPORT(target, Decompress);
   NAN_EXPORT(target, CompressUsingDict);
   NAN_EXPORT(target, DecompressUsingDict);
+  NAN_EXPORT(target, DecompressUsingCDict);
 }
 
 NODE_MODULE(node_zstd, Init)
