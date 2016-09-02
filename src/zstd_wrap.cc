@@ -103,6 +103,47 @@ static NAN_METHOD(CompressUsingDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
+static NAN_METHOD(CompressUsingCDict) {
+
+  if (info.Length() < 2 ||
+      !node::Buffer::HasInstance(info[0]) ||
+      !node::Buffer::HasInstance(info[1])) {
+    return Nan::ThrowError("First and second argument should be a buffer");
+  }
+
+  v8::Local<v8::Object> dictBuf = info[1]->ToObject();
+  char *dict = node::Buffer::Data(dictBuf);
+  size_t dictSize = node::Buffer::Length(dictBuf);
+
+  int compressionLevel = 1;
+  if (info.Length() == 3) {
+    compressionLevel = info[2]->IsUndefined() ? 0 : info[2]->NumberValue();
+  }
+
+  ZSTD_CDict *cdict = ZSTD_createCDict(dict, dictSize, compressionLevel);
+
+  v8::Local<v8::Object> inputBuf = info[0]->ToObject();
+  char *src = node::Buffer::Data(inputBuf);
+  size_t srcSize = node::Buffer::Length(inputBuf);
+
+  size_t dstCapacity = ZSTD_compressBound(srcSize);
+  char *dst = (char*)malloc(dstCapacity);
+  if (NULL == dst) {
+    return Nan::ThrowError("Too large, Out of memory!");
+  }
+
+  ZSTD_CCtx* const cctx = ZSTD_createCCtx();
+  size_t const cSize = ZSTD_compress_usingCDict(cctx, dst, dstCapacity, src, srcSize, cdict);
+  ZSTD_freeCCtx(cctx);
+  if (ZSTD_isError(cSize)) {
+    return Nan::ThrowError("Compress failed!");
+  }
+
+  Nan::MaybeLocal<v8::Object> dstBuf = Nan::NewBuffer(dst, cSize);
+
+  return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
+}
+
 static NAN_METHOD(DecompressUsingDict) {
 
   if (info.Length() < 2 ||
