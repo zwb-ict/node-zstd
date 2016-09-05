@@ -9,3 +9,7 @@ var dict = new Buffer('Nice to meet you!');
 var ddbuf = zstd.decompressUsingDict(zstd.compressUsingDict(buf, dict, 18), dict);
 assert(buf.toString() == ddbuf.toString()); 
 
+
+var cddbuf = zstd.decompressUsingCDict(zstd.compressUsingCDict(buf, dict, 18), dict);
+assert(buf.toString() == cddbuf.toString()); 
+

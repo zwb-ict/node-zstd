@@ -44,6 +44,7 @@ static NAN_METHOD(Decompress) {
 
   size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
   if (0 == dstCapacity) {
+    // When `return==0`, consider data to decompress could have any size.
     return Nan::ThrowError("Compressed size unknown");
   }
 
@@ -133,7 +134,7 @@ static NAN_METHOD(CompressUsingCDict) {
   }
 
   ZSTD_CCtx* const cctx = ZSTD_createCCtx();
-  size_t const cSize = ZSTD_compress_usingCDict(cctx, dst, dstCapacity, src, srcSize, cdict);
+  size_t const cSize = ZSTD_compress_usingDict(cctx, dst, dstCapacity, src, srcSize, cdict, sizeof(cdict), compressionLevel);
   ZSTD_freeCCtx(cctx);
   if (ZSTD_isError(cSize)) {
     return Nan::ThrowError("Compress failed!");
@@ -164,6 +165,7 @@ static NAN_METHOD(DecompressUsingDict) {
 
   size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
   if (0 == dstCapacity) {
+    // When `return==0`, consider data to decompress could have any size.
     return Nan::ThrowError("Compressed size unknown");
   }
 
@@ -204,9 +206,8 @@ static NAN_METHOD(DecompressUsingCDict) {
 
   size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
   if (0 == dstCapacity) { 
-    // When `return==0`, consider data to decompress could have any size.
-    // It's not a Error
-    printf("%s\n", "Compressed size unknown");
+    // When `return==0`, consider data to decompress could have any size.   
+    return Nan::ThrowError("Compressed size unknown");
   }
 
   char *dst = (char*)malloc(dstCapacity);
@@ -230,6 +231,7 @@ NAN_MODULE_INIT(Init) {
   NAN_EXPORT(target, Compress);
   NAN_EXPORT(target, Decompress);
   NAN_EXPORT(target, CompressUsingDict);
+  NAN_EXPORT(target, CompressUsingCDict);
   NAN_EXPORT(target, DecompressUsingDict);
   NAN_EXPORT(target, DecompressUsingCDict);
 }
