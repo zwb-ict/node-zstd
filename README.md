@@ -29,7 +29,10 @@ var decompressed = zstd.decompress(compressed);
 
 console.log(decompressed.toString());  // should be 'hello zstd'
 ```
+
 ### with dict
+
+#### Simple dictionary API
 
 ```js
 var zstd = require('node-zstd');
@@ -44,10 +47,27 @@ var decompressed = zstd.decompressUsingDict(compressed, dict);
 
 console.log(decompressed.toString());  // should be 'hello zstd'
 ```
+#### Fast dictionary API
+
+```js
+var zstd = require('node-zstd');
+
+var data = new Buffer('hello zstd');
+
+var dict = new Buffer('Nice to meet you!');
+
+var compressed = zstd.compressUsingCDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
+
+var decompressed = zstd.decompressUsingCDict(compressed, dict);
+
+console.log(decompressed.toString());  // should be 'hello zstd'
+```
+`
 ## Tests
 
 ```sh
 $ npm test
 ```
+
 ## License
 MIT
