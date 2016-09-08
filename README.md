@@ -1,4 +1,4 @@
-node-zstd [![releases/v1.2.0](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/zwb-ict/node-zstd/releases/tag/1.2.0) [![ZSTD/v1.0.0](https://img.shields.io/badge/ZSTD-v1.1.0-green.svg)](https://github.com/facebook/zstd/releases/tag/v1.0.0)
+node-zstd [![releases/v1.2.0](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/zwb-ict/node-zstd/releases/tag/1.2.0) [![ZSTD/v1.0.0](https://img.shields.io/badge/ZSTD-v1.0.0-green.svg)](https://github.com/facebook/zstd/releases/tag/v1.0.0)
 =====
 
 [![Build Status][1]][2]
