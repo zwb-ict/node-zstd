@@ -1,6 +1,6 @@
 {
   "name": "node-zstd",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Zstd wrapper for Nodejs",
   "main": "index.js",
   "scripts": {
