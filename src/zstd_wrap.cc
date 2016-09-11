@@ -1,7 +1,7 @@
 #include <nan.h>
 #include <zstd.h>
 
-static NAN_METHOD(Compress) {
+static NAN_METHOD(CompressSync) {
 
   if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
     return Nan::ThrowError("First argument should be a buffer");
@@ -32,7 +32,7 @@ static NAN_METHOD(Compress) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(Decompress) {
+static NAN_METHOD(DecompressSync) {
 
   if (info.Length() < 1 || !node::Buffer::HasInstance(info[0])) {
     return Nan::ThrowError("First argument should be a buffer");
@@ -63,7 +63,7 @@ static NAN_METHOD(Decompress) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(CompressUsingDict) {
+static NAN_METHOD(CompressSyncUsingDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -104,7 +104,7 @@ static NAN_METHOD(CompressUsingDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(CompressUsingCDict) {
+static NAN_METHOD(CompressSyncUsingCDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -145,7 +145,7 @@ static NAN_METHOD(CompressUsingCDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(DecompressUsingDict) {
+static NAN_METHOD(DecompressSyncUsingDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -186,7 +186,7 @@ static NAN_METHOD(DecompressUsingDict) {
   return info.GetReturnValue().Set(dstBuf.ToLocalChecked());
 }
 
-static NAN_METHOD(DecompressUsingCDict) {
+static NAN_METHOD(DecompressSyncUsingCDict) {
 
   if (info.Length() < 2 ||
       !node::Buffer::HasInstance(info[0]) ||
@@ -205,8 +205,8 @@ static NAN_METHOD(DecompressUsingCDict) {
   size_t srcSize = node::Buffer::Length(inputBuf);
 
   size_t dstCapacity = ZSTD_getDecompressedSize(src, srcSize);
-  if (0 == dstCapacity) { 
-    // When `return==0`, consider data to decompress could have any size.   
+  if (0 == dstCapacity) {
+    // When `return==0`, consider data to decompress could have any size.
     return Nan::ThrowError("Compressed size unknown");
   }
 
@@ -228,12 +228,12 @@ static NAN_METHOD(DecompressUsingCDict) {
 }
 
 NAN_MODULE_INIT(Init) {
-  NAN_EXPORT(target, Compress);
-  NAN_EXPORT(target, Decompress);
-  NAN_EXPORT(target, CompressUsingDict);
-  NAN_EXPORT(target, CompressUsingCDict);
-  NAN_EXPORT(target, DecompressUsingDict);
-  NAN_EXPORT(target, DecompressUsingCDict);
+  NAN_EXPORT(target, CompressSync);
+  NAN_EXPORT(target, DecompressSync);
+  NAN_EXPORT(target, CompressSyncUsingDict);
+  NAN_EXPORT(target, CompressSyncUsingCDict);
+  NAN_EXPORT(target, DecompressSyncUsingDict);
+  NAN_EXPORT(target, DecompressSyncUsingCDict);
 }
 
 NODE_MODULE(node_zstd, Init)
