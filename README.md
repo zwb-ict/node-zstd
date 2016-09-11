@@ -23,9 +23,9 @@ var zstd = require('node-zstd');
 
 var data = new Buffer('hello zstd');
 
-var compressed = zstd.compress(data, 18);  // 18 is compressionLevel, default 1 if none.
+var compressed = zstd.compressSync(data, 18);  // 18 is compressionLevel, default 1 if none.
 
-var decompressed = zstd.decompress(compressed);
+var decompressed = zstd.decompressSync(compressed);
 
 console.log(decompressed.toString());  // should be 'hello zstd'
 ```
@@ -41,9 +41,9 @@ var data = new Buffer('hello zstd');
 
 var dict = new Buffer('Nice to meet you!');
 
-var compressed = zstd.compressUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
+var compressed = zstd.compressSyncUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
 
-var decompressed = zstd.decompressUsingDict(compressed, dict);
+var decompressed = zstd.decompressSyncUsingDict(compressed, dict);
 
 console.log(decompressed.toString());  // should be 'hello zstd'
 ```
@@ -56,9 +56,9 @@ var data = new Buffer('hello zstd');
 
 var dict = new Buffer('Nice to meet you!');
 
-var compressed = zstd.compressUsingCDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
+var compressed = zstd.compressSyncUsingCDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
 
-var decompressed = zstd.decompressUsingCDict(compressed, dict);
+var decompressed = zstd.decompressSyncUsingCDict(compressed, dict);
 
 console.log(decompressed.toString());  // should be 'hello zstd'
 ```
