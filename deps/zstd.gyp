@@ -30,6 +30,16 @@
               "MACOSX_DEPLOYMENT_TARGET": "10.11"
             }
           }
+        ],
+        [
+          'OS=="win"', {
+            "sources=" : [
+              '<!@(FOR %i IN (zstd/lib/common/*.c)      DO @echo zstd/lib/common/%i)',
+              '<!@(FOR %i IN (zstd/lib/compress/*.c)    DO @echo zstd/lib/compress/%i)',
+              '<!@(FOR %i IN (zstd/lib/decompress/*.c)  DO @echo zstd/lib/decompress/%i)',
+              '<!@(FOR %i IN (zstd/lib/dictBuilder/*.c) DO @echo zstd/lib/dictBuilder/%i)'
+            ]
+          }
         ]
       ]
     }
