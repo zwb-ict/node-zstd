@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "zstd",
+      "target_name": "compressor",
       "type": "static_library",
       "standlone_static_library": 1,
       "defines": [
@@ -10,16 +10,12 @@
       "include_dirs": [
         "zstd/lib",
         "zstd/lib/common",
-        "zstd/lib/compress",
-        "zstd/lib/decompress",
-        "zstd/lib/dictBuilder"
+        "zstd/lib/compress"
       ],
 
       "sources" : [
         '<!@(ls -1 zstd/lib/common/*.c)',
-        '<!@(ls -1 zstd/lib/compress/*.c)',
-        '<!@(ls -1 zstd/lib/decompress/*.c)',
-        '<!@(ls -1 zstd/lib/dictBuilder/*.c)'
+        '<!@(ls -1 zstd/lib/compress/*.c)'
       ],
 
       "conditions": [
@@ -35,9 +31,7 @@
           'OS=="win"', {
             "sources=" : [
               '<!@(FOR %i IN (zstd/lib/common/*.c)      DO @echo zstd/lib/common/%i)',
-              '<!@(FOR %i IN (zstd/lib/compress/*.c)    DO @echo zstd/lib/compress/%i)',
-              '<!@(FOR %i IN (zstd/lib/decompress/*.c)  DO @echo zstd/lib/decompress/%i)',
-              '<!@(FOR %i IN (zstd/lib/dictBuilder/*.c) DO @echo zstd/lib/dictBuilder/%i)'
+              '<!@(FOR %i IN (zstd/lib/compress/*.c)    DO @echo zstd/lib/compress/%i)'
             ]
           }
         ]
