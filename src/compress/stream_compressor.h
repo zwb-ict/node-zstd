@@ -15,14 +15,14 @@ namespace ZSTD_NODE {
   using v8::Object;
   using v8::Local;
 
-  class StreamCompress : public StreamCoder {
+  class StreamCompressor : public StreamCoder {
   public:
     friend class StreamCompressWorker;
     static NAN_MODULE_INIT(Init);
 
   private:
-    explicit StreamCompress(Local<Object> userParams);
-    ~StreamCompress();
+    explicit StreamCompressor(Local<Object> userParams);
+    ~StreamCompressor();
 
     static NAN_METHOD(New);
     static NAN_METHOD(GetBlockSize);

@@ -10,7 +10,7 @@ namespace ZSTD_NODE {
   using v8::Local;
   using v8::Value;
 
-  StreamCompressWorker::StreamCompressWorker(Callback *callback, StreamCompress* sc, bool isLast)
+  StreamCompressWorker::StreamCompressWorker(Callback *callback, StreamCompressor* sc, bool isLast)
     : AsyncWorker(callback), sc(sc), isLast(isLast) {
     zInBuf = {sc->input, sc->inputSize, 0};
     size_t dstSize = ZSTD_CStreamOutSize();

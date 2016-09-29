@@ -11,7 +11,7 @@ namespace ZSTD_NODE {
 
   class StreamCompressWorker : public AsyncWorker {
   public:
-    StreamCompressWorker(Callback *callback, StreamCompress *sc, bool isLast);
+    StreamCompressWorker(Callback *callback, StreamCompressor *sc, bool isLast);
     ~StreamCompressWorker();
 
     void Execute();
@@ -21,9 +21,9 @@ namespace ZSTD_NODE {
   private:
     void pushToPendingOutput();
 
+    StreamCompressor *sc;
     ZSTD_outBuffer zOutBuf;
     ZSTD_inBuffer zInBuf;
-    StreamCompress *sc;
     bool isLast;
     size_t ret;
   };

@@ -1,4 +1,4 @@
-#include "stream_compress.h"
+#include "stream_compressor.h"
 #include "stream_compress_worker.h"
 
 namespace ZSTD_NODE {
@@ -24,9 +24,9 @@ namespace ZSTD_NODE {
   using v8::Local;
   using v8::Value;
 
-  NAN_MODULE_INIT(StreamCompress::Init) {
+  NAN_MODULE_INIT(StreamCompressor::Init) {
     Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
-    tpl->SetClassName(Nan::New("StreamCompress").ToLocalChecked());
+    tpl->SetClassName(Nan::New("StreamCompressor").ToLocalChecked());
     tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
     SetPrototypeMethod(tpl, "getBlockSize", GetBlockSize);
@@ -34,11 +34,11 @@ namespace ZSTD_NODE {
     SetPrototypeMethod(tpl, "compress", Compress);
 
     constructor().Reset(GetFunction(tpl).ToLocalChecked());
-    Set(target, Nan::New("StreamCompress").ToLocalChecked(),
+    Set(target, Nan::New("StreamCompressor").ToLocalChecked(),
         GetFunction(tpl).ToLocalChecked());
   }
 
-  StreamCompress::StreamCompress(Local<Object> userParams) : dict(NULL), zcs(NULL) {
+  StreamCompressor::StreamCompressor(Local<Object> userParams) : dict(NULL), zcs(NULL) {
     HandleScope scope;
 
     int level = 1;
@@ -67,7 +67,7 @@ namespace ZSTD_NODE {
     }
   }
 
-  StreamCompress::~StreamCompress() {
+  StreamCompressor::~StreamCompressor() {
     if (dict != NULL) {
       alloc.Free(dict);
     }
@@ -77,9 +77,9 @@ namespace ZSTD_NODE {
     ZSTD_freeCStream(zcs);
   }
 
-  NAN_METHOD(StreamCompress::New) {
+  NAN_METHOD(StreamCompressor::New) {
     if (info.IsConstructCall()) {
-      StreamCompress *sc = new StreamCompress(info[0]->ToObject());
+      StreamCompressor *sc = new StreamCompressor(info[0]->ToObject());
       sc->Wrap(info.This());
       info.GetReturnValue().Set(info.This());
     } else {
@@ -92,20 +92,20 @@ namespace ZSTD_NODE {
     }
   }
 
-  NAN_METHOD(StreamCompress::GetBlockSize) {
+  NAN_METHOD(StreamCompressor::GetBlockSize) {
     info.GetReturnValue().Set(Nan::New<Number>(ZSTD_CStreamInSize()));
   }
 
-  NAN_METHOD(StreamCompress::Copy) {
-    StreamCompress* sc = ObjectWrap::Unwrap<StreamCompress>(info.Holder());
+  NAN_METHOD(StreamCompressor::Copy) {
+    StreamCompressor* sc = ObjectWrap::Unwrap<StreamCompressor>(info.Holder());
     Local<Object> chunk = info[0]->ToObject();
     int chunkSize = Length(chunk);
     input = alloc.Alloc(chunkSize);
     memcpy(input, Data(chunk), chunkSize);
   }
 
-  NAN_METHOD(StreamCompress::Compress) {
-    StreamCompress* sc = ObjectWrap::Unwrap<StreamCompress>(info.Holder());
+  NAN_METHOD(StreamCompressor::Compress) {
+    StreamCompressor* sc = ObjectWrap::Unwrap<StreamCompressor>(info.Holder());
     bool isLast = info[0]->BooleanValue();
     Callback *callback = new Nan::Callback(info[1].As<Function>());
     StreamCompressWorker *worker = new StreamCompressWorker(callback, sc, isLast);
@@ -118,7 +118,7 @@ namespace ZSTD_NODE {
     }
   }
 
-  inline Persistent<Function>& StreamCompress::constructor() {
+  inline Persistent<Function>& StreamCompressor::constructor() {
     static Persistent<Function> ctor;
     return ctor;
   }
