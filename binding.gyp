@@ -41,14 +41,14 @@
         "src/common"
       ],
       "dependencies": [
-        "<(module_root_dir)/deps/zstd.gyp:decompress"
+        "<(module_root_dir)/deps/zstd.gyp:decompressor"
       ],
       "sources": [
         "src/common/stream_coder.cc",
         "src/common/allocator.cc",
-        "src/decomrepss/decompressor_index.cc",
-        "src/decomrepss/stream_decompressor.cc",
-        "src/decomrepss/stream_decompress_worker.cc"
+        "src/decompress/decompressor_index.cc",
+        "src/decompress/stream_decompressor.cc",
+        "src/decompress/stream_decompress_worker.cc"
       ],
       "conditions": [
         [

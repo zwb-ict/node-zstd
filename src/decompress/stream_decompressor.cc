@@ -1,5 +1,5 @@
 #include "stream_decompressor.h"
-#include "stream_decompressor_worker.h"
+#include "stream_decompress_worker.h"
 
 namespace ZSTD_NODE {
 
@@ -31,14 +31,14 @@ namespace ZSTD_NODE {
 
     SetPrototypeMethod(tpl, "getBlockSize", GetBlockSize);
     SetPrototypeMethod(tpl, "copy", Copy);
-    SetPrototypeMethod(tpl, "decompressor", Decompressor);
+    SetPrototypeMethod(tpl, "decompress", Decompress);
 
     constructor().Reset(GetFunction(tpl).ToLocalChecked());
     Set(target, Nan::New("StreamDecompressor").ToLocalChecked(),
         GetFunction(tpl).ToLocalChecked());
   }
 
-  StreamDecompressor::StreamDecompressor(Local<Object> userParams) : dict(NULL), zds(NULL) {
+  StreamDecompressor::StreamDecompressor(Local<Object> userParams) : zds(NULL), dict(NULL) {
     HandleScope scope;
 
     size_t dictSize = 0;
@@ -99,7 +99,7 @@ namespace ZSTD_NODE {
     memcpy(sd->input, Data(chunk), chunkSize);
   }
 
-  NAN_METHOD(StreamDecompressor::Decompressor) {
+  NAN_METHOD(StreamDecompressor::Decompress) {
     StreamDecompressor* sd = ObjectWrap::Unwrap<StreamDecompressor>(info.Holder());
 
     Callback *callback = new Callback(info[0].As<Function>());

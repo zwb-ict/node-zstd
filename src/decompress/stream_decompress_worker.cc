@@ -10,7 +10,7 @@ namespace ZSTD_NODE {
   using v8::Local;
   using v8::Value;
 
-  StreamDecodeWorker::StreamDecodeWorker(Callback *callback, StreamDecode* sd)
+  StreamDecompressWorker::StreamDecompressWorker(Callback *callback, StreamDecompressor* sd)
     : AsyncWorker(callback), sd(sd) {
     zInBuf = {sd->input, sd->inputSize, 0};
     size_t dstSize = ZSTD_DStreamOutSize();
@@ -18,11 +18,11 @@ namespace ZSTD_NODE {
     zOutBuf = {dst, dstSize, 0};
   }
 
-  StreamDecodeWorker::~StreamDecodeWorker() {
+  StreamDecompressWorker::~StreamDecompressWorker() {
     sd->alloc.Free(zOutBuf.dst);
   }
 
-  void StreamDecodeWorker::Execute() {
+  void StreamDecompressWorker::Execute() {
     while (zInBuf.pos < zInBuf.size) {
       do {
         zOutBuf.pos = 0;
@@ -35,7 +35,7 @@ namespace ZSTD_NODE {
     }
   }
 
-  void StreamDecodeWorker::pushToPendingOutput() {
+  void StreamDecompressWorker::pushToPendingOutput() {
     char *output = static_cast<char*>(sd->alloc.Alloc(zOutBuf.pos));
     if (output == NULL) {
       SetErrorMessage("ZSTD decompress failed, out of memory");
@@ -46,7 +46,7 @@ namespace ZSTD_NODE {
     sd->pending_output.push_back(output);
   }
 
-  void StreamDecodeWorker::HandleOKCallback() {
+  void StreamDecompressWorker::HandleOKCallback() {
     HandleScope scope;
 
     const int argc = 2;
@@ -59,7 +59,7 @@ namespace ZSTD_NODE {
     sd->alloc.ReportMemoryToV8();
   }
 
-  void StreamDecodeWorker::HandleErrorCallback() {
+  void StreamDecompressWorker::HandleErrorCallback() {
     HandleScope scope;
 
     const int argc = 1;

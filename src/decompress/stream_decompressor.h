@@ -27,7 +27,7 @@ namespace ZSTD_NODE {
     static NAN_METHOD(New);
     static NAN_METHOD(GetBlockSize);
     static NAN_METHOD(Copy);
-    static NAN_METHOD(Decode);
+    static NAN_METHOD(Decompress);
 
     static inline Persistent<Function>& constructor();
 

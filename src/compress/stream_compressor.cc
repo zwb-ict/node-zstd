@@ -38,7 +38,7 @@ namespace ZSTD_NODE {
         GetFunction(tpl).ToLocalChecked());
   }
 
-  StreamCompressor::StreamCompressor(Local<Object> userParams) : dict(NULL), zcs(NULL) {
+  StreamCompressor::StreamCompressor(Local<Object> userParams) :  zcs(NULL), dict(NULL) {
     HandleScope scope;
 
     int level = 1;
