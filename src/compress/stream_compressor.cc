@@ -100,8 +100,8 @@ namespace ZSTD_NODE {
     StreamCompressor* sc = ObjectWrap::Unwrap<StreamCompressor>(info.Holder());
     Local<Object> chunk = info[0]->ToObject();
     int chunkSize = Length(chunk);
-    input = alloc.Alloc(chunkSize);
-    memcpy(input, Data(chunk), chunkSize);
+    sc->input = sc->alloc.Alloc(chunkSize);
+    memcpy(sc->input, Data(chunk), chunkSize);
   }
 
   NAN_METHOD(StreamCompressor::Compress) {

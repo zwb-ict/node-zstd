@@ -14,12 +14,12 @@ namespace ZSTD_NODE {
     : AsyncWorker(callback), sc(sc), isLast(isLast) {
     zInBuf = {sc->input, sc->inputSize, 0};
     size_t dstSize = ZSTD_CStreamOutSize();
-    void *dst = sc->alloc.Alloc(outBufSize);
+    void *dst = sc->alloc.Alloc(dstSize);
     zOutBuf = {dst, dstSize, 0};
   }
 
   StreamCompressWorker::~StreamCompressWorker() {
-    sc->alloc.Free(zInBuf.dst);
+    sc->alloc.Free(zOutBuf.dst);
   }
 
   void StreamCompressWorker::Execute() {
@@ -34,7 +34,7 @@ namespace ZSTD_NODE {
 
     if (isLast) {
       zOutBuf.pos =  0;
-      ret = ZSTD_endStream(sc->zcs, &output);
+      ret = ZSTD_endStream(sc->zcs, &zOutBuf);
       if (ret != 0) {
         SetErrorMessage("ZSTD compress failed, not fully flushed");
       }
@@ -43,7 +43,7 @@ namespace ZSTD_NODE {
   }
 
   void StreamCompressWorker::pushToPendingOutput() {
-    char *output = static_cast<char*>(sc->alloc.Alloc(zo.pos));
+    char *output = static_cast<char*>(sc->alloc.Alloc(zOutBuf.pos));
     if (output == NULL) {
       SetErrorMessage("ZSTD compress failed, out of memory");
     }

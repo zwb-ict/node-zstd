@@ -13,9 +13,9 @@
       "sources": [
         "src/common/stream_coder.cc",
         "src/common/allocator.cc",
-        "src/enc/compressor_index.cc",
-        "src/enc/stream_compressor.cc",
-        "src/enc/stream_compress_worker.cc"
+        "src/compress/compressor_index.cc",
+        "src/compress/stream_compressor.cc",
+        "src/compress/stream_compress_worker.cc"
       ],
       "conditions": [
         [

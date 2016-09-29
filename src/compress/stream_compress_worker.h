@@ -2,7 +2,7 @@
 #define STREAM_COMPRESS_WORKER_H
 
 #include <nan.h>
-#include "stream_compress.h"
+#include "stream_compressor.h"
 
 namespace ZSTD_NODE {
 
