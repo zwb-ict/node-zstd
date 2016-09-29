@@ -31,9 +31,10 @@ namespace ZSTD_NODE {
 
     static inline Persistent<Function>& constructor();
 
-    void *dict;
-    void *input;
     ZSTD_CStream *zcs;
+    size_t inputSize;
+    void *input;
+    void *dict;
   };
 
 }

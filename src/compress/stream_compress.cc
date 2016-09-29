@@ -65,15 +65,15 @@ namespace ZSTD_NODE {
     } else {
       ZSTD_initCStream(zcs, level);
     }
-
-
   }
 
   StreamCompress::~StreamCompress() {
     if (dict != NULL) {
       alloc.Free(dict);
     }
-    alloc.Free(input);
+    if (input != NULL) {
+      alloc.Free(input);
+    }
     ZSTD_freeCStream(zcs);
   }
 
