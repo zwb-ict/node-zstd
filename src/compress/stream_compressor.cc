@@ -107,7 +107,7 @@ namespace ZSTD_NODE {
   NAN_METHOD(StreamCompressor::Compress) {
     StreamCompressor* sc = ObjectWrap::Unwrap<StreamCompressor>(info.Holder());
     bool isLast = info[0]->BooleanValue();
-    Callback *callback = new Nan::Callback(info[1].As<Function>());
+    Callback *callback = new Callback(info[1].As<Function>());
     StreamCompressWorker *worker = new StreamCompressWorker(callback, sc, isLast);
     if (info[2]->BooleanValue()) {
       AsyncQueueWorker(worker);
