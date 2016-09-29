@@ -1,5 +1,5 @@
-#ifndef STREAM_COMPRESS_H
-#define STREAM_COMPRESS_H
+#ifndef STREAM_COMPRESSOR_H
+#define STREAM_COMPRESSOR_H
 
 #include <nan.h>
 
