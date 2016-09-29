@@ -16,9 +16,10 @@ namespace ZSTD_NODE {
   class StreamCoder : public ObjectWrap {
   public:
     Allocator alloc;
-    vector<char*> pending_output;
 
+    vector<char*> pending_output;
     Local<Array> PendingChunksAsArray();
+
   protected:
     explicit StreamCoder();
     ~StreamCoder();
