@@ -19,8 +19,10 @@ namespace ZSTD_NODE {
     void HandleErrorCallback();
 
   private:
-    void pushToPendingOutput(ZSTD_outBuffer zo);
+    void pushToPendingOutput();
 
+    ZSTD_outBuffer zOutBuf;
+    ZSTD_inBuffer zInBuf;
     StreamCompress *sc;
     bool isLast;
     size_t ret;
