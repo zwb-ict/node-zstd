@@ -103,7 +103,7 @@ namespace ZSTD_NODE {
     StreamDecompressor* sd = ObjectWrap::Unwrap<StreamDecompressor>(info.Holder());
 
     Callback *callback = new Callback(info[0].As<Function>());
-    StreamDecompressorWorker *worker = new StreamDecompressorWorker(callback, sd);
+    StreamDecompressWorker *worker = new StreamDecompressWorker(callback, sd);
     if (info[1]->BooleanValue()) {
       AsyncQueueWorker(worker);
     } else {
