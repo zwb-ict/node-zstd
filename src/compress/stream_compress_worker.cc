@@ -12,19 +12,22 @@ namespace ZSTD_NODE {
 
   StreamCompressWorker::StreamCompressWorker(Callback *callback, StreamCompressor* sc, bool isLast)
     : AsyncWorker(callback), sc(sc), isLast(isLast) {
-    zInBuf = {sc->input, sc->inputSize, 0};
+    void *src = sc->alloc.Alloc(sc->inputSize);
+    memcpy(src, sc->input, sc->inputSize);
+    zInBuf = {src, sc->inputSize, 0};
     size_t dstSize = ZSTD_CStreamOutSize();
     void *dst = sc->alloc.Alloc(dstSize);
     zOutBuf = {dst, dstSize, 0};
   }
 
   StreamCompressWorker::~StreamCompressWorker() {
+    sc->alloc.Free(const_cast<void*>(zInBuf.src));
     sc->alloc.Free(zOutBuf.dst);
   }
 
   void StreamCompressWorker::Execute() {
     while (zInBuf.pos < zInBuf.size) {
-      zOutBuf.pos =  0;
+      zOutBuf.pos = 0;
       ret = ZSTD_compressStream(sc->zcs, &zOutBuf, &zInBuf);
       if (ZSTD_isError(ret)) {
         SetErrorMessage(ZSTD_getErrorName(ret));
@@ -33,7 +36,7 @@ namespace ZSTD_NODE {
     }
 
     if (isLast) {
-      zOutBuf.pos =  0;
+      zOutBuf.pos = 0;
       ret = ZSTD_endStream(sc->zcs, &zOutBuf);
       if (ret != 0) {
         SetErrorMessage("ZSTD compress failed, not fully flushed");
