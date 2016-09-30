@@ -52,7 +52,7 @@ function decompress(input, params, cb) {
     process.nextTick(cb, new Error('Second argument is not a function.'));
     return;
   }
-  var stream = new TransformStreamDecompressor();
+  var stream = new TransformStreamDecompressor(params);
   var chunks = [];
   var length = 0;
   stream.on('error', cb);
@@ -86,7 +86,7 @@ function compressSync(input, params) {
 
 function decompressSync(input, params) {
   if (!Buffer.isBuffer(input)) {
-    throw new Error('Brotli input is not a buffer.');
+    throw new Error('Input is not a buffer.');
   }
   var stream = new TransformStreamDecompressor(params || {}, true);
   var chunks = [];
@@ -107,7 +107,7 @@ function TransformStreamCompressor(params, sync) {
 
   this.compressor = new compressor.StreamCompressor(params || {});
   this.sync = sync || false;
-  var blockSize = this.compressorr.getBlockSize();
+  var blockSize = this.compressor.getBlockSize();
   this.status = {
     blockSize: blockSize,
     remaining: blockSize
@@ -116,7 +116,7 @@ function TransformStreamCompressor(params, sync) {
 util.inherits(TransformStreamCompressor, Transform);
 
 TransformStreamCompressor.prototype._transform = function(chunk, encoding, next) {
-  compressStreamChunk(this, chunk, this.compressorr, this.status, this.sync, next);
+  compressStreamChunk(this, chunk, this.compressor, this.status, this.sync, next);
 };
 
 TransformStreamCompressor.prototype._flush = function(done) {
@@ -194,7 +194,7 @@ function TransformStreamDecompressor(params, sync) {
 util.inherits(TransformStreamDecompressor, Transform);
 
 TransformStreamDecompressor.prototype._transform = function(chunk, encoding, next) {
-  decompressStreamChunk(this, chunk, this.decompressorr, this.status, this.sync, next);
+  decompressStreamChunk(this, chunk, this.decompressor, this.status, this.sync, next);
 };
 
 // We need to fill the blockSize for better compression results
