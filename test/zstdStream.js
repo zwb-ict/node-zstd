@@ -27,7 +27,7 @@ function testStream(method, bufferFile, resultFile, done, params) {
 
   writeStream.on('finish', function() {
     var result = fs.readFileSync(path.join(__dirname, '/fixtures/', resultFile));
-    expect(writeStream.data).to.eql(result);
+    expect(writeStream.data).to.deep.equal(result);
     done();
   });
 }
