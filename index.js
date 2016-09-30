@@ -155,24 +155,10 @@ function compressStreamChunk(stream, chunk, compressor, status, sync, done) {
       }
       compressStreamChunk(stream, chunk, compressor, status, sync, done);
     }, !sync);
-  } else if (length < status.remaining) {
+  } else if (length <= status.remaining) {
     status.remaining -= length;
     compressor.copy(chunk);
     done();
-  } else { // length === status.remaining
-    status.remaining = status.blockSize;
-    compressor.copy(chunk);
-    compressor.compress(false, function(err, output) {
-      if (err) {
-        return done(err);
-      }
-      if (output) {
-        for (var i = 0; i < output.length; i++) {
-          stream.push(output[i]);
-        }
-      }
-      done();
-    }, !sync);
   }
 }
 
