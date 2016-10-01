@@ -58,7 +58,6 @@ describe('ZSTD Buffer Sync', function() {
       testBufferSync(zstd.decompressSync, 'data.txt.zst.09.dict', 'data.txt', {level: 9, dict: new Buffer("hello zstd")});
     });
 
-
     it('should decompress to an empty buffer', function() {
       testBufferSync(zstd.decompressSync, 'empty.zst', 'empty');
     });

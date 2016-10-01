@@ -43,6 +43,10 @@ describe('ZSTD Buffer Async', function() {
       testBufferAsync(zstd.compress, 'data.txt', 'data.txt.zst.09', done, {level: 9});
     });
 
+    it('should compress text data with dict=(new Buffer("hello zstd"))', function(done) {
+      testBufferAsync(zstd.compress, 'data.txt', 'data.txt.zst.09.dict', done, {level: 9, dict: new Buffer("hello zstd")});
+    });
+
     it('should compress an empty buffer', function(done) {
       testBufferAsync(zstd.compress, 'empty', 'empty.zst', done);
     });
@@ -60,6 +64,10 @@ describe('ZSTD Buffer Async', function() {
 
     it('should decompress text data', function(done) {
       testBufferAsync(zstd.decompress, 'data.txt.zst', 'data.txt', done);
+    });
+
+    it('should decompress text data with dict=(new Buffer("hello zstd"))', function() {
+      testBufferAsync(zstd.decompress, 'data.txt.zst.09.dict', 'data.txt', {level: 9, dict: new Buffer("hello zstd")});
     });
 
     it('should decompress to an empty buffer', function(done) {
