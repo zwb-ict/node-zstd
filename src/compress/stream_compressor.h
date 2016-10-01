@@ -33,6 +33,7 @@ namespace ZSTD_NODE {
 
     ZSTD_CStream *zcs;
     size_t inputSize;
+    size_t pos;
     void *input;
     void *dict;
   };

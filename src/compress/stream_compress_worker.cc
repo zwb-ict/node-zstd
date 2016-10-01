@@ -12,9 +12,9 @@ namespace ZSTD_NODE {
 
   StreamCompressWorker::StreamCompressWorker(Callback *callback, StreamCompressor* sc, bool isLast)
     : AsyncWorker(callback), sc(sc), isLast(isLast) {
-    void *src = sc->alloc.Alloc(sc->inputSize);
-    memcpy(src, sc->input, sc->inputSize);
-    zInBuf = {src, sc->inputSize, 0};
+    void *src = sc->alloc.Alloc(sc->pos);
+    memcpy(src, sc->input, sc->pos);
+    zInBuf = {src, sc->pos, 0};
     size_t dstSize = ZSTD_CStreamOutSize();
     void *dst = sc->alloc.Alloc(dstSize);
     zOutBuf = {dst, dstSize, 0};
