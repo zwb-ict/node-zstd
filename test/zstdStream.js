@@ -50,6 +50,10 @@ describe('ZSTD Stream', function() {
       testStream(zstd.compressStream, 'data.txt', 'data.txt.zst.09', done, {level: 9});
     });
 
+    it('should compress text data with dict=(new Buffer("hello zstd"))', function(done) {
+      testStream(zstd.compressStream, 'data.txt', 'data.txt.zst.09.dict', done, {level: 9, dict: new Buffer("hello zstd")});
+    });
+
     it('should compress an empty buffer', function(done) {
       testStream(zstd.compressStream, 'empty', 'empty.zst', done);
     });
@@ -67,6 +71,10 @@ describe('ZSTD Stream', function() {
 
     it('should decompress text data', function(done) {
       testStream(zstd.decompressStream, 'data.txt.zst', 'data.txt', done);
+    });
+
+    it('should decompress text data with dict=(new Buffer("hello zstd"))', function() {
+      testStream(zstd.decompressStream, 'data.txt.zst.09.dict', 'data.txt', {level: 9, dict: new Buffer("hello zstd")});
     });
 
     it('should decompress to an empty buffer', function(done) {
