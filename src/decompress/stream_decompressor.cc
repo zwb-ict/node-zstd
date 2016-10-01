@@ -52,7 +52,9 @@ namespace ZSTD_NODE {
       memcpy(dict, Data(dictBuf), dictSize);
     }
 
-    input = alloc.Alloc(ZSTD_DStreamInSize());
+    inputSize = ZSTD_DStreamInSize();
+    input = alloc.Alloc(inputSize);
+    pos = 0;
 
     ZSTD_customMem zcm = {Allocator::Alloc, Allocator::Free, &alloc};
     zds = ZSTD_createDStream_advanced(zcm);
@@ -92,9 +94,17 @@ namespace ZSTD_NODE {
 
   NAN_METHOD(StreamDecompressor::Copy) {
     StreamDecompressor* sd = ObjectWrap::Unwrap<StreamDecompressor>(info.Holder());
-    Local<Object> input = info[0]->ToObject();
-    sd->inputSize = Length(input);
-    sd->input = Data(input);
+    Local<Object> chunkBuf = info[0]->ToObject();
+    char *chunk = Data(chunkBuf);
+    size_t chunkSize = Length(chunkBuf);
+    if (chunkSize != 0) {
+      if (sd->pos == sd->inputSize) {
+        sd->pos = 0;
+      }
+      char *pos = static_cast<char*>(sd->input) + sd->pos;
+      memcpy(pos, chunk, chunkSize);
+      sd->pos += chunkSize;
+    }
   }
 
   NAN_METHOD(StreamDecompressor::Decompress) {
