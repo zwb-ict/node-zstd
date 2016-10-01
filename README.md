@@ -68,7 +68,7 @@ try {
 #### compressStream([zstdCompressParams])
 
 ```javascript
-const compressStream = require('node-zstd).compressStream;
+const compressStream = require('node-zstd').compressStream;
 const fs = require('fs');
 
 fs.createReadStream('path/to/input')
@@ -79,7 +79,7 @@ fs.createReadStream('path/to/input')
 #### decompressStream([zstdCompressParams])
 
 ```javascript
-const decompressStream = require('node-zstd).decompressStream;
+const decompressStream = require('node-zstd').decompressStream;
 const fs = require('fs');
 
 fs.createReadStream('path/to/input')
@@ -87,15 +87,24 @@ fs.createReadStream('path/to/input')
   .pipe(fs.createWriteStream('path/to/output'));
 ```
 
-### brotliParams
+### ZSTD Params
 
-The `compress`, `compressSync` and `compressStream` methods may accept an optional `ZstdCompressParams` object to define compress level and/or dict.
+The `compress`, `compressSync` and `compressStream` methods may accept an optional `zstdCompressParams` object to define compress level and/or dict.
 
 ```javascript
-const brotliParams = {
+const zstdCompressParams = {
   level: 5, // default 1
   dict: new Buffer('hello zstd'), // if dict null, left level only.
   dictSize: dict.length  // if dict null, left level only.
+};
+```
+
+The `decompress`, `decompressSync` and `decompressStream` methods may accept an optional `zstdDecompressParams` object to define dict.
+
+```javascript
+const zdtdDecompressParams = {
+  dict: new Buffer('hello zstd'),
+  dictSize: dict.length
 };
 ```
 
