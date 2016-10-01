@@ -16,53 +16,89 @@ $ npm install node-zstd --save
 
 ## Usage
 
-### sample use
+### Async
 
-```js
-var zstd = require('node-zstd');
+#### compress(buffer[, zstdCompressParams], callback)
 
-var data = new Buffer('hello zstd');
+```javascript
+const compress = require('node-zstd').compress;
 
-var compressed = zstd.compressSync(data, 18);  // 18 is compressionLevel, default 1 if none.
+compress(input, function(err, output)) {
+  // ...
+};
+```
+#### decompress(buffer[, zstdDecompressParams], callback)
 
-var decompressed = zstd.decompressSync(compressed);
+```javascript
+const decompress = require('node-zstd').decompress;
 
-console.log(decompressed.toString());  // should be 'hello zstd'
+decompress(input, function(err, output) {
+  // ...
+});
 ```
 
-### with dict
+### Sync
 
-#### Simple dictionary API
+#### compressSync(buffer[, zstdCompressParams])
 
-```js
-var zstd = require('node-zstd');
+```javascript
+const compressSync = require('node-zstd').compressSync;
 
-var data = new Buffer('hello zstd');
-
-var dict = new Buffer('Nice to meet you!');
-
-var compressed = zstd.compressSyncUsingDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
-
-var decompressed = zstd.decompressSyncUsingDict(compressed, dict);
-
-console.log(decompressed.toString());  // should be 'hello zstd'
+try {
+  var output = compressSync(input);
+} catch(err) {
+  // ...
+}
 ```
-#### Fast dictionary API
 
-```js
-var zstd = require('node-zstd');
+#### decompressSync(buffer[, zstdCompressParams])
 
-var data = new Buffer('hello zstd');
+```javascript
+const decompressSync = require('node-zstd').decompressSync;
 
-var dict = new Buffer('Nice to meet you!');
-
-var compressed = zstd.compressSyncUsingCDict(data, dict, 18);  // 18 is compressionLevel, default 1 if none.
-
-var decompressed = zstd.decompressSyncUsingCDict(compressed, dict);
-
-console.log(decompressed.toString());  // should be 'hello zstd'
+try {
+  var output = decompressSync(input);
+} catch(err) {
+  // ...
+}
 ```
-`
+
+### Stream
+
+#### compressStream([zstdCompressParams])
+
+```javascript
+const compressStream = require('node-zstd).compressStream;
+const fs = require('fs');
+
+fs.createReadStream('path/to/input')
+  .pipe(compressStream())
+  .pipe(fs.createWriteStream('path/to/output'));
+```
+
+#### decompressStream([zstdCompressParams])
+
+```javascript
+const decompressStream = require('node-zstd).decompressStream;
+const fs = require('fs');
+
+fs.createReadStream('path/to/input')
+  .pipe(decompressStream())
+  .pipe(fs.createWriteStream('path/to/output'));
+```
+
+### brotliParams
+
+The `compress`, `compressSync` and `compressStream` methods may accept an optional `ZstdCompressParams` object to define compress level and/or dict.
+
+```javascript
+const brotliParams = {
+  level: 5, // default 1
+  dict: new Buffer('hello zstd'), // if dict null, left level only.
+  dictSize: dict.length  // if dict null, left level only.
+};
+```
+
 ## Tests
 
 ```sh
