@@ -70,6 +70,9 @@ namespace ZSTD_NODE {
     if (dict != NULL) {
       alloc.Free(dict);
     }
+    if (input != NULL) {
+      alloc.Free(input);
+    }
     ZSTD_freeDStream(zds);
   }
 
