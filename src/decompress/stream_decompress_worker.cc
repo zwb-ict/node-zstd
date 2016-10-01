@@ -12,16 +12,13 @@ namespace ZSTD_NODE {
 
   StreamDecompressWorker::StreamDecompressWorker(Callback *callback, StreamDecompressor* sd)
     : AsyncWorker(callback), sd(sd) {
-    void *src = sd->alloc.Alloc(sd->pos);
-    memcpy(src, sd->input, sd->pos);
-    zInBuf = {src, sd->pos, 0};
+    zInBuf = {sd->input, sd->pos, 0};
     size_t dstSize = ZSTD_DStreamOutSize();
     void *dst = sd->alloc.Alloc(dstSize);
     zOutBuf = {dst, dstSize, 0};
   }
 
   StreamDecompressWorker::~StreamDecompressWorker() {
-    sd->alloc.Free(const_cast<void*>(zInBuf.src));
     sd->alloc.Free(zOutBuf.dst);
   }
 
