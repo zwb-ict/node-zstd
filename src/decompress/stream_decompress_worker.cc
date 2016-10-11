@@ -29,6 +29,7 @@ namespace ZSTD_NODE {
         ret = ZSTD_decompressStream(sd->zds, &zOutBuf, &zInBuf);
         if (ZSTD_isError(ret)) {
           SetErrorMessage(ZSTD_getErrorName(ret));
+          return;
         }
         pushToPendingOutput();
       } while (ret == 1);
