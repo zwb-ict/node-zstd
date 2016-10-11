@@ -28,6 +28,7 @@ namespace ZSTD_NODE {
       ret = ZSTD_compressStream(sc->zcs, &zOutBuf, &zInBuf);
       if (ZSTD_isError(ret)) {
         SetErrorMessage(ZSTD_getErrorName(ret));
+        return;
       }
       pushToPendingOutput();
     }
@@ -37,6 +38,7 @@ namespace ZSTD_NODE {
       ret = ZSTD_endStream(sc->zcs, &zOutBuf);
       if (ret != 0) {
         SetErrorMessage("ZSTD compress failed, not fully flushed");
+        return;
       }
       pushToPendingOutput();
     }
@@ -46,6 +48,7 @@ namespace ZSTD_NODE {
     char *output = static_cast<char*>(sc->alloc.Alloc(zOutBuf.pos));
     if (output == NULL) {
       SetErrorMessage("ZSTD compress failed, out of memory");
+      return;
     }
     memcpy(output, zOutBuf.dst, zOutBuf.pos);
     Allocator::AllocatedBuffer* buf_info = Allocator::GetBufferInfo(output);

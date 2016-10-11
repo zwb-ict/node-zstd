@@ -23,6 +23,7 @@ namespace ZSTD_NODE {
   }
 
   void StreamDecompressWorker::Execute() {
+    while (zInBuf.pos < zInBuf.size) {
       do {
         zOutBuf.pos = 0;
         ret = ZSTD_decompressStream(sd->zds, &zOutBuf, &zInBuf);
@@ -32,12 +33,14 @@ namespace ZSTD_NODE {
         }
         pushToPendingOutput();
       } while (ret == 1);
+    }
   }
 
   void StreamDecompressWorker::pushToPendingOutput() {
     char *output = static_cast<char*>(sd->alloc.Alloc(zOutBuf.pos));
     if (output == NULL) {
       SetErrorMessage("ZSTD decompress failed, out of memory");
+      return;
     }
     memcpy(output, zOutBuf.dst, zOutBuf.pos);
     Allocator::AllocatedBuffer* buf_info = Allocator::GetBufferInfo(output);
