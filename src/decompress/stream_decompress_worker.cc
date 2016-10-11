@@ -23,7 +23,6 @@ namespace ZSTD_NODE {
   }
 
   void StreamDecompressWorker::Execute() {
-    while (zInBuf.pos < zInBuf.size) {
       do {
         zOutBuf.pos = 0;
         ret = ZSTD_decompressStream(sd->zds, &zOutBuf, &zInBuf);
@@ -32,7 +31,6 @@ namespace ZSTD_NODE {
         }
         pushToPendingOutput();
       } while (ret == 1);
-    }
   }
 
   void StreamDecompressWorker::pushToPendingOutput() {
