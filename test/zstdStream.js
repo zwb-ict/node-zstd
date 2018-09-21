@@ -9,7 +9,7 @@ var path = require('path');
 
 function BufferWriter() {
   Writable.call(this);
-  this.data = new Buffer(0);
+  this.data = Buffer.alloc(0);
 }
 util.inherits(BufferWriter, Writable);
 
@@ -51,7 +51,7 @@ describe('ZSTD Stream', function() {
     });
 
     it('should compress text data with dict=(new Buffer("hello zstd"))', function(done) {
-      testStream(zstd.compressStream, 'data.txt', 'data.txt.zst.09.dict', done, {level: 9, dict: new Buffer("hello zstd")});
+      testStream(zstd.compressStream, 'data.txt', 'data.txt.zst.09.dict', done, {level: 9, dict: Buffer.from("hello zstd")});
     });
 
     it('should compress an empty buffer', function(done) {
@@ -73,8 +73,8 @@ describe('ZSTD Stream', function() {
       testStream(zstd.decompressStream, 'data.txt.zst', 'data.txt', done);
     });
 
-    it('should decompress text data with dict=(new Buffer("hello zstd"))', function() {
-      testStream(zstd.decompressStream, 'data.txt.zst.09.dict', 'data.txt', {level: 9, dict: new Buffer("hello zstd")});
+    it('should decompress text data with dict=(new Buffer("hello zstd"))', function(done) {
+      testStream(zstd.decompressStream, 'data.txt.zst.09.dict', 'data.txt', done, {level: 9, dict: Buffer.from("hello zstd")});
     });
 
     it('should decompress to an empty buffer', function(done) {

@@ -130,7 +130,7 @@ TransformStreamCompressor.prototype._flush = function(done) {
         that.push(output[i]);
       }
     }
-    done();
+    return done();
   }, !this.sync);
 };
 
@@ -153,12 +153,12 @@ function compressStreamChunk(stream, chunk, compressor, status, sync, done) {
           stream.push(output[i]);
         }
       }
-      compressStreamChunk(stream, chunk, compressor, status, sync, done);
+      return compressStreamChunk(stream, chunk, compressor, status, sync, done);
     }, !sync);
   } else if (length <= status.remaining) {
     status.remaining -= length;
     compressor.copy(chunk);
-    done();
+    return done();
   }
 }
 
@@ -183,6 +183,21 @@ TransformStreamDecompressor.prototype._transform = function(chunk, encoding, nex
   decompressStreamChunk(this, chunk, this.decompressor, this.status, this.sync, next);
 };
 
+TransformStreamDecompressor.prototype._flush = function(done) {
+  var that = this;
+  this.decompressor.decompress(function(err, output) {
+    if (err) {
+      return done(err);
+    }
+    if (output) {
+      for (var i = 0; i < output.length; i++) {
+        that.push(output[i]);
+      }
+    }
+    return done();
+  }, !this.sync);
+};
+
 // We need to fill the blockSize for better compression results
 function decompressStreamChunk(stream, chunk, decompressor, status, sync, done) {
   var length = chunk.length;
@@ -202,43 +217,14 @@ function decompressStreamChunk(stream, chunk, decompressor, status, sync, done) 
           stream.push(output[i]);
         }
       }
-      decompressStreamChunk(stream, chunk, decompressor, status, sync, done);
+      return decompressStreamChunk(stream, chunk, decompressor, status, sync, done);
     }, !sync);
-  } else if (length < status.remaining) {
+  } else if (length <= status.remaining) {
     status.remaining -= length;
     decompressor.copy(chunk);
-    done();
-  } else { // length === status.remaining
-    status.remaining = status.blockSize;
-    decompressor.copy(chunk);
-    decompressor.decompress(function(err, output) {
-      if (err) {
-        return done(err);
-      }
-      if (output) {
-        for (var i = 0; i < output.length; i++) {
-          stream.push(output[i]);
-        }
-      }
-      done();
-    }, !sync);
+    return done();
   }
 }
-
-TransformStreamDecompressor.prototype._flush = function(done) {
-  var that = this;
-  this.decompressor.decompress(function(err, output) {
-    if (err) {
-      return done(err);
-    }
-    if (output) {
-      for (var i = 0; i < output.length; i++) {
-        that.push(output[i]);
-      }
-    }
-    done();
-  }, !this.sync);
-};
 
 function decompressStream(params) {
   return new TransformStreamDecompressor(params);

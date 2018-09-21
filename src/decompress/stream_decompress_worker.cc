@@ -12,27 +12,21 @@ namespace ZSTD_NODE {
 
   StreamDecompressWorker::StreamDecompressWorker(Callback *callback, StreamDecompressor* sd)
     : AsyncWorker(callback), sd(sd) {
-    zInBuf = {sd->input, sd->pos, 0};
-    size_t dstSize = ZSTD_DStreamOutSize();
-    void *dst = sd->alloc.Alloc(dstSize);
-    zOutBuf = {dst, dstSize, 0};
+    zInBuf = {sd->input, sd->inPos, 0};
+    zOutBuf = {sd->dst, sd->dstSize, 0};
   }
 
-  StreamDecompressWorker::~StreamDecompressWorker() {
-    sd->alloc.Free(zOutBuf.dst);
-  }
+  StreamDecompressWorker::~StreamDecompressWorker() {}
 
   void StreamDecompressWorker::Execute() {
     while (zInBuf.pos < zInBuf.size) {
-      do {
-        zOutBuf.pos = 0;
-        ret = ZSTD_decompressStream(sd->zds, &zOutBuf, &zInBuf);
-        if (ZSTD_isError(ret)) {
-          SetErrorMessage(ZSTD_getErrorName(ret));
-          return;
-        }
-        pushToPendingOutput();
-      } while (ret == 1);
+      zOutBuf.pos = 0;
+      ret = ZSTD_decompressStream(sd->zds, &zOutBuf, &zInBuf);
+      if (ZSTD_isError(ret)) {
+        SetErrorMessage(ZSTD_getErrorName(ret));
+        return;
+      }
+      pushToPendingOutput();
     }
   }
 
@@ -56,7 +50,7 @@ namespace ZSTD_NODE {
       Nan::Null(),
       sd->PendingChunksAsArray()
     };
-    callback->Call(argc, argv);
+    callback->Call(argc, argv, async_resource);
 
     sd->alloc.ReportMemoryToV8();
   }
@@ -68,7 +62,7 @@ namespace ZSTD_NODE {
     Local<Value> argv[argc] = {
       Error(Nan::New<String>(ErrorMessage()).ToLocalChecked())
     };
-    callback->Call(argc, argv);
+    callback->Call(argc, argv, async_resource);
 
     sd->alloc.ReportMemoryToV8();
   }

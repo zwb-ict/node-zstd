@@ -12,15 +12,11 @@ namespace ZSTD_NODE {
 
   StreamCompressWorker::StreamCompressWorker(Callback *callback, StreamCompressor* sc, bool isLast)
     : AsyncWorker(callback), sc(sc), isLast(isLast) {
-    zInBuf = {sc->input, sc->pos, 0};
-    size_t dstSize = ZSTD_CStreamOutSize();
-    void *dst = sc->alloc.Alloc(dstSize);
-    zOutBuf = {dst, dstSize, 0};
+    zInBuf = {sc->input, sc->inPos, 0};
+    zOutBuf = {sc->dst, sc->dstSize, 0};
   }
 
-  StreamCompressWorker::~StreamCompressWorker() {
-    sc->alloc.Free(zOutBuf.dst);
-  }
+  StreamCompressWorker::~StreamCompressWorker() {}
 
   void StreamCompressWorker::Execute() {
     while (zInBuf.pos < zInBuf.size) {
@@ -64,7 +60,7 @@ namespace ZSTD_NODE {
       Nan::Null(),
       sc->PendingChunksAsArray()
     };
-    callback->Call(argc, argv);
+    callback->Call(argc, argv, async_resource);
 
     sc->alloc.ReportMemoryToV8();
   }
@@ -76,7 +72,7 @@ namespace ZSTD_NODE {
     Local<Value> argv[argc] = {
       Error(Nan::New<String>(ErrorMessage()).ToLocalChecked())
     };
-    callback->Call(argc, argv);
+    callback->Call(argc, argv, async_resource);
 
     sc->alloc.ReportMemoryToV8();
   }

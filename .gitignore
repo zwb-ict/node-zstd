@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+
+# Editors
+.vscode
+
+# Node Related Folders
+build
+node_modules
+coverage
+.nyc_output

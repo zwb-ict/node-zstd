@@ -4,7 +4,12 @@
   "description": "Zstd wrapper for Nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha -t 5000",
+    "build:dev": "node-gyp -j 16 build --debug",
+    "build": "node-gyp -j 16 build",
+    "rebuild:dev": "node-gyp -j 16 rebuild --debug",
+    "rebuild": "node-gyp -j 16 rebuild",
+    "clean": "node-gyp clean"
   },
   "repository": {
     "type": "git",
@@ -16,6 +21,13 @@
     "decompression"
   ],
   "author": "zwb-ict",
+  "contributors": [
+    {
+      "name": "Tyler Stiene",
+      "email": "tystiene@gmail.com",
+      "url": "https://github.com/Stieneee"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zwb-ict/node-zstd/issues"
@@ -23,10 +35,12 @@
   "homepage": "https://github.com/zwb-ict/node-zstd#readme",
   "dependencies": {
     "bindings": "^1.2.1",
-    "nan": "^2.4.0"
+    "nan": "^2.4.0",
+    "nyc": "^13.0.1",
+    "segfault-handler": "^1.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.1.0"
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0"
   }
 }

@@ -24,6 +24,7 @@ namespace ZSTD_NODE {
     StreamDecompressor *sd;
     ZSTD_outBuffer zOutBuf;
     ZSTD_inBuffer zInBuf;
+
     size_t ret;
   };
 

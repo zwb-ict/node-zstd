@@ -59,7 +59,11 @@ namespace ZSTD_NODE {
 
     inputSize = ZSTD_CStreamInSize();
     input = alloc.Alloc(inputSize);
-    pos = 0;
+    inPos = 0;
+
+    dstSize = ZSTD_CStreamOutSize();
+    dst = alloc.Alloc(dstSize);
+    dstPos = 0;
 
     ZSTD_customMem zcm = {Allocator::Alloc, Allocator::Free, &alloc};
     zcs = ZSTD_createCStream_advanced(zcm);
@@ -78,22 +82,19 @@ namespace ZSTD_NODE {
     if (input != NULL) {
       alloc.Free(input);
     }
+    if (dst != NULL) {
+      alloc.Free(dst);
+    }
     ZSTD_freeCStream(zcs);
   }
 
   NAN_METHOD(StreamCompressor::New) {
-    if (info.IsConstructCall()) {
-      StreamCompressor *sc = new StreamCompressor(info[0]->ToObject());
-      sc->Wrap(info.This());
-      info.GetReturnValue().Set(info.This());
-    } else {
-      const int argc = 1;
-      Local<Value> argv[argc] = {info[0]};
-      Local<Function> cons = Nan::New(constructor());
-      //      info.GetReturnValue().Set(cons->NewInstance(GetCurrentContext(),
-      //argc, argv).ToLocalChecked());
-      info.GetReturnValue().Set(cons->NewInstance(argc, argv));
+    if (!info.IsConstructCall()) {
+      return Nan::ThrowError("StreamCompressor() must be called as a constructor");
     }
+    StreamCompressor *sc = new StreamCompressor(info[0]->ToObject());
+    sc->Wrap(info.This());
+    info.GetReturnValue().Set(info.This());
   }
 
   NAN_METHOD(StreamCompressor::GetBlockSize) {
@@ -106,12 +107,12 @@ namespace ZSTD_NODE {
     char *chunk = Data(chunkBuf);
     size_t chunkSize = Length(chunkBuf);
     if (chunkSize != 0) {
-      if (sc->pos == sc->inputSize) {
-        sc->pos = 0;
+      if (sc->inPos == sc->inputSize) {
+        sc->inPos = 0;
       }
-      char *pos = static_cast<char*>(sc->input) + sc->pos;
+      char *pos = static_cast<char*>(sc->input) + sc->inPos;
       memcpy(pos, chunk, chunkSize);
-      sc->pos += chunkSize;
+      sc->inPos += chunkSize;
     }
   }
 
@@ -125,7 +126,6 @@ namespace ZSTD_NODE {
     } else {
       worker->Execute();
       worker->WorkComplete();
-      worker->Destroy();
     }
   }
 
